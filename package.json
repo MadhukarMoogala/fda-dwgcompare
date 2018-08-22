@@ -1,0 +1,28 @@
+{
+  "name": "fda-compare",
+  "version": "1.0.0",
+  "description": "A tiny app to compare two drawings and output a single drawing with visual diff, use Forge Design Automation",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nodejs",
+    "aws",
+    "forge",
+    "design",
+    "automation"
+  ],
+  "author": "Madhukar Moogala",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.296.0",
+    "ejs": "^2.6.1",
+    "express": "^4.16.3",
+    "forge-apis": "^0.4.3",
+    "multer": "^1.3.1",
+    "multer-s3": "^2.7.0",
+    "nodemon": "^1.18.3",
+    "serve-favicon": "^2.5.0"
+  }
+}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="spin.js" type="text/javascript"></script>
+    <title>FPD Compare</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script type="text/javascript">
+        debugger
+        var ToSpin = {
+                start: true,
+                stop: false
+            };
+        var spinner;
+        $(document).ready(function () {           
+                $("#toAws").on('submit', function (event) {
+                var form = $(this);
+                var url = form.attr('action');
+                spin(ToSpin.start);
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: form.serialize(), // serializes the form's elements.
+                    success: function (data) {
+                        var res = data;
+                        console.log(res);
+                        spin(ToSpin.stop);
+                    }
+                });
+                $(this).find(':input[type=submit]').prop('disabled', true);
+                //event.preventDefault();
+            });
+                $("#button").on('click', function (event) {
+                spin(ToSpin.start);
+                $.ajax({
+                    type: 'POST',
+                    url: '/creatWorkItem',
+                    success: function (res) {
+                        $.ajax({
+                            url: '/getWorkItemStatus',
+                            type: 'GET',
+                            dataType:'json',
+                            contentType:'application/javascript',
+                            data: { "workItemId": res.workItemId },
+                            success: function (res) {
+                                               spin(ToSpin.stop);
+                                                var msg = "";
+                                                msg += "<a href=";
+                                                msg += report;
+                                                msg += ">";
+                                                msg += "Download Drawing";
+                                                msg += "</a>";
+                                                $('#button').html("<br>"+msg);                                              
+                                            
+                                }
+                        });
+                    }
+                });
+            });            
+            });
+            function spin(torf) {
+                    if (torf === ToSpin.stop && spinner != undefined) {
+                        spinner.stop();
+                    }
+                    else //define spinner
+                    {
+                        var opts = {
+                            lines: 12, // The number of lines to draw
+                            length: 5, // The length of each line
+                            width: 5, // The line thickness
+                            radius: 7, // The radius of the inner circle
+                            color: '#000', // #rbg or #rrggbb
+                            speed: 1, // Rounds per second
+                            trail: 100, // Afterglow percentage
+                            shadow: true // Whether to render a shadow
+                        };
+                        var target = document.getElementById('spin');
+                        spinner = new Spinner(opts).spin(target);
+                    }
+                }
+   
+    </script>
+</head>
+<body>
+   
+    <div class="container">
+        <div class="jumbotron">
+            <form id= "toAws" method="post" enctype="multipart/form-data" action="/upload">
+                <input type="file" id="file1" name="upl1" accept=".DWG" required="required"/>
+                <br>                
+                <input type="file" id="file2" name="upl1" accept=".DWG" required="required"/>
+                <br>
+                <p>
+                <input type="submit"/><div id="spin"></div>
+                </p>
+            </form>
+            <button id="button">Compare</button>            
+        </div>
+    </div>
+    </div>
+</body>
+</html>
