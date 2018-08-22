@@ -12,6 +12,7 @@ This sample use AWS S3 to store uploaded client AutoCAD drawing files from local
 
 ## Working GIF
 ![](https://images2.imgbox.com/49/3c/JFH2NR5x_o.gif)
+[Incase of GIF not Loading](https://images2.imgbox.com/92/0a/aQLJ38WL_o.gif)
 ## Live 
 see it live [Forge DWG Compare](https://fdadwgcompare.herokuapp.com/)
 ## Setup
