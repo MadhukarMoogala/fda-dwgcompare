@@ -95,7 +95,9 @@ const uploadToAws = multer({
 /**
  * Start
  */
-app.listen(3000, () => {
+//Heroku process bind to $PORT
+var port = process.env.PORT || 3000;
+app.listen(port, () => {
     console.log('Forge Drawing App listening on port 3000!');
 });
 
