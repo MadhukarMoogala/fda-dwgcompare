@@ -1,4 +1,4 @@
-# vscode 
+# vscode allow laucnh json
 .vscode/*
 !.vscode/launch.json
 
