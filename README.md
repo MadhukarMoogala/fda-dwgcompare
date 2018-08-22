@@ -57,9 +57,8 @@ Open the browser: [http://localhost:3000](http://localhost:3000).
 
 ## Debuging
 **Create Launch.json**
-```json
-{
-    
+```
+{   
     "version": "0.2.0",
     "configurations": [
         {
