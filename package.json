@@ -4,7 +4,8 @@
   "description": "A tiny app to compare two drawings and output a single drawing with visual diff, use Forge Design Automation",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "NODE_ENV=production node app.js"
   },
   "keywords": [
     "nodejs",
