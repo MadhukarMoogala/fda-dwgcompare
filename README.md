@@ -11,7 +11,7 @@
 This sample use AWS S3 to store uploaded client AutoCAD drawing files from local file disk, and initiates Forge Design Automation process `Compare` function, results out the AutoCAD drawing with visual differences back to client.
 
 ## Working GIF
-![](https://image.ibb.co/ebDeVz/fdadwgcompare_3.gif)
+![IMG](https://thumbs2.imgbox.com/49/3c/JFH2NR5x_t.gif)
 ## Live 
 see it live [Forge DWG Compare](https://fdadwgcompare.herokuapp.com/)
 ## Setup
