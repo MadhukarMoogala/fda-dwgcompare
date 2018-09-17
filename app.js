@@ -57,6 +57,7 @@ const dwgFiles = {
     dwg1: "",
     dwg2: ""
 }
+ global.objectKeys = [];
 
 /**
  * Init Express Middleware
@@ -86,7 +87,10 @@ const uploadToAws = multer({
         bucket: config.credentials.aws_bucketname,
         key: function (req, file, cb) {
             console.log(file);
-            cb(null, file.originalname); //use Date.now() for unique file keys
+            //replace any special character with empty char
+            var validObjKey = file.originalname.replace(/[^0-9a-zA-Z.]+/g, "");
+            global.objectKeys.push(validObjKey);
+            cb(null, validObjKey); //use Date.now() for unique file keys
         }
 
     })
@@ -106,54 +110,54 @@ app.listen(port, () => {
  * Process Form Upload request
  */
 app.post('/upload', uploadToAws.array('upl1', 2), (req, res, next) => {
-        res.on('finish', () => {
+    res.on('finish', () => {
         console.log('response sent');
     })
     if (typeof req.files !== 'undefined' && req.files.length > 0) {
         dwgFiles.dwg1 = req.files[0].location;
-        dwgFiles.dwg2 = req.files[1].location;        
-        res.render('index',dwgFiles);  
-        }
+        dwgFiles.dwg2 = req.files[1].location;
+        res.render('index', dwgFiles);
+    }
     next();
 });
 
 /**
  * Process Forge Design Automation
  */
-app.post('/creatWorkItem',function(req,res){
+app.post('/creatWorkItem', function (req, res) {
     oAuth2TwoLegged.authenticate()
         .then(function (credentials) {
             submitWorkItem(dwgFiles, oAuth2TwoLegged, credentials)
-            .then(function (workItemResp){
-                console.log("*** workitem post response:", workItemResp.body);
-                var workItemId = workItemResp.body.Id;
-                res.json({ success: true, message: 'Submitted WorkItem Successfully!', workItemId: workItemId });
-            })
-            .catch(function (error){
-                console.error(error);
-                res.json({ success: false, message: 'Submitted WorkItem Failed!' });
-                res.status (500).end () ;
-            });            
+                .then(function (workItemResp) {
+                    console.log("*** workitem post response:", workItemResp.body);
+                    var workItemId = workItemResp.body.Id;
+                    res.json({ success: true, message: 'Submitted WorkItem Successfully!', workItemId: workItemId });
+                })
+                .catch(function (error) {
+                    console.error(error);
+                    res.json({ success: false, message: 'Submitted WorkItem Failed!' });
+                    res.status(500).end();
+                });
         })
-        .catch(function(error){
+        .catch(function (error) {
             console.error(error);
-            res.status(500).end() ;
+            res.status(500).end();
         });
 });
 
 
-app.get('/getWorkItemStatus',function (req, res,next) {
+app.get('/getWorkItemStatus', function (req, res, next) {
     if (!req.query.workItemId) {
         res.json({ success: false, message: 'Could not find workItemId' });
-        res.status(500).end() ;
+        res.status(500).end();
     }
     else {
         let workItemId = req.query.workItemId;
-            getWorkItemStatus(workItemId, oAuth2TwoLegged.getCredentials(), function (status, workitemResult) {
+        getWorkItemStatus(workItemId, oAuth2TwoLegged.getCredentials(), function (status, workitemResult) {
             var report = "";
             if (status) {
                 // Process the output from the workitem on success
-                var output = workitemResult.Arguments.OutputArguments[0].Resource;               
+                var output = workitemResult.Arguments.OutputArguments[0].Resource;
                 console.log("Process the output from the workitem on success\n");
                 console.log(output + "\n");
                 console.log("Display the workitem repory \n");
@@ -168,9 +172,28 @@ app.get('/getWorkItemStatus',function (req, res,next) {
                 }
                 console.log(report);
             }
-            console.log(report);                                    
-            res.json({success:true,report:output});
-        });        
+            console.log(report);
+            //We need to flush the S3 input drawings.
+            var params = {
+                Bucket: config.credentials.aws_bucketname,
+                Delete: {
+                    Objects: [
+                        {
+                            Key: global.objectKeys[0]
+                        },
+                        {
+                            Key: global.objectKeys[1]
+                        }
+                    ],
+                    Quiet: false
+                }
+            };
+            s3.deleteObjects(params, function (err, data) {
+                if (err) console.log(err, err.stack);
+                else console.log(data);
+            })
+            res.json({ success: true, report: output });
+        });
     }
 });
 // The function polls the workitem status, in a while loop, 
